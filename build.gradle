@@ -52,7 +52,7 @@ test {
 
 signing {
 	sign configurations.archives
-	required { !isSnapshot }
+	required { !isSnapshot && !System.env.TRAVIS }
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
