@@ -1,0 +1,11 @@
+language: java
+jdk:
+  - oraclejdk7
+branches:
+  only:
+  - master
+install: ./gradlew clean dependencies assemble
+script: ./gradlew check
+env:
+  global:
+  - TERM=dumb

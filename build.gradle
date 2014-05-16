@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+// IDE support
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+group = 'io.jdev.html2js'
+version = '0.1-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+ext {
+	groovyVersion = "2.3.0"
+	spockVersion = "0.7-groovy-2.0"
+
+	isSnapshot = version.endsWith("-SNAPSHOT")	
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
+	testCompile("org.spockframework:spock-core:0.7-groovy-2.0") { exclude module: 'groovy-all' } // as this pulls the wrong version in as a trans dependency
+}
+
+test {
+	systemProperties "template.dest.dir": "$buildDir/js"
+	testLogging {
+		exceptionFormat = 'full'
+	}
+}
+
+eclipse {
+	classpath {
+		containers.clear()
+		containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7'
+	}
+}

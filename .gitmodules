@@ -1,0 +1,3 @@
+[submodule "grunt-html2js"]
+	path = src\\test\\resources\\grunt-html2js
+	url = https://github.com/karlgoldstein/grunt-html2js
