@@ -1,6 +1,11 @@
+// base reqs
 apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'maven'
+
+// publishing
+apply plugin: "base"
+apply plugin: "maven"
+apply plugin: "signing"
 
 // IDE support
 apply plugin: 'idea'
@@ -16,7 +21,17 @@ ext {
 	groovyVersion = "2.3.0"
 	spockVersion = "0.7-groovy-2.0"
 
-	isSnapshot = version.endsWith("-SNAPSHOT")	
+	isSnapshot = version.endsWith("-SNAPSHOT")
+	poms = []
+	afterEvaluate {
+		poms*.whenConfigured { pom ->
+			pomModifications.each {
+				configure(pom, it)
+			}
+		}
+	}
+	pomModifications = []
+	modifyPom = { pomModifications << it }
 }
 
 repositories {
@@ -35,6 +50,87 @@ test {
 	}
 }
 
+signing {
+	sign configurations.archives
+	required { !isSnapshot }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+	from sourceSets.main.allSource
+	classifier = 'sources'
+}
+
+artifacts {
+	archives jar
+	archives javadocJar
+	archives sourcesJar
+}
+
+tasks.withType(Upload) {
+	repositories.withType(org.gradle.api.artifacts.maven.MavenResolver) {
+		poms << it.pom
+	}
+}
+
+uploadArchives { task ->
+	repositories.mavenDeployer {
+		if(!isSnapshot) {
+			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+		}
+		uniqueVersion = false
+		gradle.taskGraph.whenReady { taskGraph ->
+			if (taskGraph.hasTask(task)) {
+				repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+					authentication(userName: sonatypeOssUsername, password: sonatypeOssPassword)
+				}
+				snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+					authentication(userName: sonatypeOssUsername, password: sonatypeOssPassword)
+				}
+			}
+		}
+	}
+}
+
+modifyPom {
+	project {
+		url "https://github.com/tomdcc/html2js-jvm/"
+		inceptionYear "2014"
+		licenses {
+			license {
+				name 'The MIT Licence'
+				url 'http://opensource.org/licenses/MIT'
+				distribution 'repo'
+			}
+		}
+		scm {
+			url "https://github.com/tomdcc/html2js-jvm/"
+		}
+		developers {
+			developer {
+				id "tomdcc"
+				name "Tom Dunstan"
+			}
+		}
+	}
+	dependencies.removeAll(dependencies.findAll { println it.properties; it.scope == "test" })
+}
+	
+task uploadSnapshots << {
+	if(!isSnapshot) {
+			println "Not uploading snapshot as not a snapshot version"
+	}
+}
+
+if(isSnapshot) {
+	uploadSnapshots.dependsOn(uploadArchives)
+}
+
+// IDE support
 eclipse {
 	classpath {
 		containers.clear()
