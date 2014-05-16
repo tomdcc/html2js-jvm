@@ -12,7 +12,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 group = 'io.jdev.html2js'
-version = '0.1-SNAPSHOT'
+version = '0.1'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
@@ -98,6 +98,8 @@ uploadArchives { task ->
 
 modifyPom {
 	project {
+		name "HTML 2 JS"
+		description "An implementation of grunt-html2js for the JVM. Bundles AngularJS HTML templates into Javascript files."
 		url "https://github.com/tomdcc/html2js-jvm/"
 		inceptionYear "2014"
 		licenses {
