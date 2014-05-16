@@ -119,7 +119,7 @@ modifyPom {
 			}
 		}
 	}
-	dependencies.removeAll(dependencies.findAll { println it.properties; it.scope == "test" })
+	dependencies.removeAll(dependencies.findAll { it.scope == "test" })
 }
 	
 task uploadSnapshots << {
