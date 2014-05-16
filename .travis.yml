@@ -5,7 +5,9 @@ branches:
   only:
   - master
 install: ./gradlew clean dependencies assemble
-script: ./gradlew check
+script: ./gradlew check uploadSnapshots
 env:
   global:
   - TERM=dumb
+  - secure: "M03L8K0CdjXVT8RERjs02wtbe1wgWbjajStXswsw2cC8N7vQZevrN9AR/na7UZ6yDRYYHV5M3WJSGSGI+OS17rD0gpFZlWWSuHagtJHKfgrD1NXuA43tmaR2sB9Pp968ZM+AZQjdYw0MJpErvduWp5kQB5Ty3zZ9MDjHsgrgU9A="
+  - secure: "KFW4bnQZCIAX9NquAlGlBA+eCW3+UJBGhn78iub9dHpXaa3dY/HBAFwDI/aIlLBYg96GxqwBJZw+h+bfqzZBEJtmRHrvlm+urgptmVMqh8MTfU43ADfSZ8FQKia0n9TvyKSdipp8lktO4n/KuCFE7/6nPaPOFDREGWdYPK1R8Nk="
